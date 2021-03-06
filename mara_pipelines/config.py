@@ -1,12 +1,18 @@
 """Configuration of data integration pipelines and how to run them"""
 
 import datetime
+import deprecation
 import functools
 import multiprocessing
 import pathlib
 import typing
 
+from mara_app.monkey_patch import patch
+import mara_storage.config
+import mara_storage.storages
+
 from . import pipelines, events
+from ._version import __version__
 
 
 def root_pipeline() -> 'pipelines.Pipeline':
@@ -14,6 +20,9 @@ def root_pipeline() -> 'pipelines.Pipeline':
     return pipelines.demo_pipeline()
 
 
+@deprecation.deprecated(deprecated_in='3.2.0', removed_in='4.0.0',
+                        current_version=__version__,
+                        details='Use mara_storage.config.storages instead')
 def data_dir() -> str:
     """Where to find local data files"""
     return str(pathlib.Path('data').absolute())
@@ -22,6 +31,15 @@ def data_dir() -> str:
 def default_db_alias() -> str:
     """The alias of the database that should be used when not specified otherwise"""
     return 'dwh-etl'
+
+
+def default_storage_alias() -> str:
+    """The alias of the storage that should be used when not specified otherwise"""
+    return 'data'
+
+@patch(mara_storage.config.storages)
+def storages() -> {str: mara_storage.storages.Storage}:
+    return {'data': mara_storage.storages.LocalStorage(base_path=pathlib.Path(data_dir()))}
 
 
 def default_task_max_retries():

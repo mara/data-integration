@@ -1,5 +1,7 @@
 """Make the functionalities of this package auto-discoverable by mara-app"""
 
+from ._version import __version__
+
 
 def MARA_CONFIG_MODULES():
     from . import config

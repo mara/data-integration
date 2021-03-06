@@ -5,9 +5,13 @@ def get_long_description():
     with open('README.md') as f:
         return re.sub('!\[(.*?)\]\(docs/(.*?)\)', r'![\1](https://github.com/mara/mara-pipelines/raw/master/docs/\2)', f.read())
 
+about = {}
+with open('mara_pipelines/_version.py') as f:
+    exec(f.read(), about)
+
 setup(
     name='mara-pipelines',
-    version='3.1.1',
+    version=about['__version__'],
 
     description='Opinionated lightweight ELT pipeline framework',
 
@@ -19,6 +23,8 @@ setup(
     install_requires=[
         'mara-db>=4.7.1',
         'mara-page>=1.3.0',
+        'mara-storage==0.9.2',
+        'deprecation>=2.1.0',
         'graphviz>=0.8',
         'python-dateutil>=2.6.1',
         'pythondialog>=3.4.0',
